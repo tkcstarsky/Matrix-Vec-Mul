@@ -34,17 +34,17 @@
 ## 优化结果
 ### 1、优化程序的输出结果
 * 运行矩阵（1000次，不包含cublas对比）：
-![res1](pic/res1.png)
+![res1](https://github.com/tkcstarsky/Matrix-Vec-Mul/tree/master/pic/res1.png)
 * 执行一次（1次，包含cublas的对比）：
-![res2](pic/res2.png)
+![res2](https://github.com/tkcstarsky/Matrix-Vec-Mul/tree/master/pic/res2.png)
 ### 2、整体优化结果曲线图   
 * （1）未加入Register优化前（取1024阶矩阵重复1000次运算）可得性能为：
-![res3](pic/res3.png)   
+![res3](https://github.com/tkcstarsky/Matrix-Vec-Mul/tree/master/pic/res3.png)   
 * （2）加入Register后，由于该优化与矩阵大小关系较大，因此取矩阵大小为64~1024的矩阵分别测试性能，最终得到以下性能图：（时间已取log10）   
-![res4](pic/res4.png)
+![res4](https://github.com/tkcstarsky/Matrix-Vec-Mul/tree/master/pic/res4.png)
 ## 性能分析
 * 对于本次优化的性能分析主要对于Register优化给出，由于register的数量有限，故在实际矩阵较大时，可能压缩过的CSR矩阵不完全能放入register中，此时会该部分矩阵仍会存储在主存中，因而使得优化力度减小。
 * 由优化结果中的曲线图，对矩阵大小为384~448的运行结果观察不难得知，register数量的最大值即出现在该范围内，可以观察到在448及更大的矩阵运算时，register优化的效果逐渐降低甚至几乎为0。因此对384~448段的矩阵做更为精确的分析，可得到以下图像，其中红色线代表只做到CSR优化时的时间消耗，蓝色代表加上register优化后的时间消耗：
-![res5](pic/res5.png)
+![res5](https://github.com/tkcstarsky/Matrix-Vec-Mul/tree/master/pic/res5.png)
 * 由蓝色线条在408处的迅速上升可知，407即为当前GPU下使用该方法能给单个thread分配最多register的矩阵大小，超过407大小的矩阵部分可能被移交主存（甚至在移交后不再大部分只用register存储，因而导致性能的提升微乎其微甚至下降）。
 * 更多对测试数据的观察与编译过程中cuda使用register的记录可在test.xlsx文件中查看。
